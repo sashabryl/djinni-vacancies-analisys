@@ -4,7 +4,10 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup, ResultSet, Tag
 from selenium import webdriver
-from selenium.common import NoSuchElementException, ElementClickInterceptedException
+from selenium.common import (
+    NoSuchElementException,
+    ElementClickInterceptedException,
+)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
@@ -66,10 +69,12 @@ class DjinniScraper:
             writer = csv.writer(file)
             writer.writerow(COLUMNS)
             writer.writerows(
-                (vacancy.__getattribute__(attr) for attr in COLUMNS) for vacancy in vacancies
+                (vacancy.__getattribute__(attr) for attr in COLUMNS)
+                for vacancy in vacancies
             )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     parser = DjinniScraper(DJINNI_URL)
     try:
         parser.write_to_csv("vacancies.csv")

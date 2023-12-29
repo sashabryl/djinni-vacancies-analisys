@@ -16,7 +16,7 @@ COLUMNS = [
     "linux",
     "tableau",
     "react",
-    "excel"
+    "excel",
 ]
 
 
