@@ -1,0 +1,1 @@
+# djinni-vacancies-analisys
