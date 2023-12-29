@@ -11,7 +11,8 @@ from selenium.common import (
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
-from config import Vacancy, DJINNI_URL, COLUMNS
+from config import Vacancy, DJINNI_URL, COLUMNS, DJINNI_URL_JUNIOR, DJINNI_URL_MIDDLE, DJINNI_URL_SENIOR, \
+    DJINNI_URL_TEAM_LEAD
 
 
 class DjinniScraper:
@@ -42,6 +43,12 @@ class DjinniScraper:
         except NoSuchElementException:
             return [None]
 
+    def find_element_safe(self, value: str) -> WebElement | None:
+        try:
+            return self.driver.find_element(By.CSS_SELECTOR, value)
+        except NoSuchElementException:
+            return None
+
     def parse(self):
         self.driver.get(self.url)
         vacancies = []
@@ -52,6 +59,9 @@ class DjinniScraper:
                 By.CSS_SELECTOR, ".job-list-item__description > span"
             )
             vacancies += self.parse_page(page)
+            if not self.find_element_safe("ul.pagination"):
+                print("Done!")
+                break
             next_page = self.find_elements_safe("a.page-link")[-1]
             if next_page:
                 try:
@@ -77,7 +87,24 @@ class DjinniScraper:
 if __name__ == "__main__":
     parser = DjinniScraper(DJINNI_URL)
     try:
-        parser.write_to_csv("vacancies.csv")
+        print("Parsing without filters!")
+        parser.write_to_csv("general_vacancies.csv")
+
+        print("Parsing vacancies for Juniors!")
+        parser.url = DJINNI_URL_JUNIOR
+        parser.write_to_csv("junior_vacancies.csv")
+
+        print("Parsing vacancies for Middlers!")
+        parser.url = DJINNI_URL_MIDDLE
+        parser.write_to_csv("middle_vacancies.csv")
+
+        print("Parsing vacancies for Seniors!")
+        parser.url = DJINNI_URL_SENIOR
+        parser.write_to_csv("senior_vacancies.csv")
+
+        print("Parsing vacancies for Team Leads!")
+        parser.url = DJINNI_URL_TEAM_LEAD
+        parser.write_to_csv("team_lead_vacancies.csv")
     except Exception as e:
         print(e)
     finally:
